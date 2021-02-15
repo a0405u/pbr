@@ -14,7 +14,12 @@ PlaneLight::PlaneLight(double i, Vector3 pos, double sx, double sy, Vector3 r, R
 
 RGB PlaneLight::getIntencity(Vector3 n) const
 {
-    return color * intencity * cosVector(normal, n);
+    double cos = cosVector(normal, n);
+
+    if (cos < PRECISION)
+        return RGB();
+
+    return color * intencity * cos;
 }
 
 Vector3 PlaneLight::getPosition() const

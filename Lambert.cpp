@@ -28,5 +28,6 @@ RGB Lambert::luminance(Point p, Ray o, const Scene & scene)
         if (np) // Если точка существует
             l = l + np->material->luminance(*np, r, scene) ; // Дальше трассируем луч
     }
+
     return l * o.color; // Возвращение яркости
 }

@@ -186,15 +186,13 @@ Point * Scene::trace(Ray & r) const
 
 void Scene::render(int n) // Брать случайную точку в пикселе, вместо центральной
 {
-    cout << "RENDERING ";
-
     double scale = mainCamera->sensor->scale;
     Vector3 & origin = mainCamera->sensor->origin;
     Vector3 offset;
 
     for (int i = 0; i < n; i++)
     {
-        cout << '\r' << i * 100 / n  << '%' << flush;
+        cout << '\r' << "RENDERING " << i * 100 / n  << '%' << flush;
 
         for (int y = 0; y < mainCamera->sensor->resy; ++y)
         {
@@ -210,10 +208,10 @@ void Scene::render(int n) // Брать случайную точку в пик�
 
                 if (p) // Если точка существует
                 {
-                    mainCamera->sensor->value[y][x] += p->material->luminance(*p, ray, *this);
+                    mainCamera->sensor->value[y][x] = p->material->luminance(*p, ray, *this);
                 }
             }
         }
     }
-    cout << endl << "DONE!" << endl;
+    cout << endl << "FINISHED!" << endl;
 }

@@ -9,6 +9,10 @@
 #include "Lambert.hpp"
 #include "Emissive.hpp"
 
+#include <chrono>
+#include <thread>
+#include <future>
+
 using namespace std;
 
 struct Scene
@@ -29,7 +33,8 @@ struct Scene
     void addCamera(Camera * c); // Добавление камеры c в сцену
     void selectCamera(int n); // Выбор камеры под номером n в качестве основной
     Point * trace(Ray & r) const;
-    void render(int n);
+    void renderThreaded(unsigned int passes = 2, unsigned int threads = 2);
+    void renderThread(unsigned int passes = 1, unsigned int threads = 1, unsigned int * done = NULL);
 
 };
 

@@ -184,23 +184,19 @@ Point * Scene::trace(Ray & r) const
     return p;
 }
 
-void Scene::render(int n) // Брать случайную точку в пикселе, вместо центральной
+void Scene::renderThread(unsigned int passes, unsigned int threads, unsigned int * done)
 {
     double scale = mainCamera->sensor->scale;
     Vector3 & origin = mainCamera->sensor->origin;
     Vector3 offset;
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < passes; i++)
     {
-        cout << '\r' << "RENDERING " << i * 100 / n  << '%' << flush;
-
         for (int y = 0; y < mainCamera->sensor->resy; ++y)
-        {
-            offset.z = - scale * ( y + (double)rand() / RAND_MAX );
-
             for (int x = 0; x < mainCamera->sensor->resx; ++x)
             {
                 offset.y = scale * ( x + (double)rand() / RAND_MAX ); 
+                offset.z = - scale * ( y + (double)rand() / RAND_MAX );
 
                 Ray ray = Ray((origin + offset).normalized(), mainCamera->position); // Генерация луча
 
@@ -208,10 +204,34 @@ void Scene::render(int n) // Брать случайную точку в пик�
 
                 if (p) // Если точка существует
                 {
-                    mainCamera->sensor->value[y][x] = p->material->luminance(*p, ray, *this);
+                    mainCamera->sensor->value[y][x] += p->material->luminance(*p, ray, *this);
                 }
             }
-        }
+        (*done)++;
+        cout << '\r' << "RENDERING " << (*done) * 100 / (passes * threads)  << '%' << flush;
     }
-    cout << endl << "FINISHED!" << endl;
+}
+
+void Scene::renderThreaded(unsigned int passes, unsigned int threads)
+{
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+
+    vector<thread *> vt;
+
+    unsigned int done = 0;
+
+    cout << '\r' << "RENDERING 0%" << flush;
+
+    for (int i = 0; i < threads; i++)
+    {
+        vt.push_back(new thread(&Scene::renderThread, this, passes/threads, threads, &done));
+    }
+    for (int i = 0; i < threads; i++)
+    {
+        vt[i]->join();
+    }
+
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cout << endl << "FINISHED IN " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " SECONDS" << endl;
 }

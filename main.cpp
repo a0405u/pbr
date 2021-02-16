@@ -19,17 +19,18 @@
 #define OUTPUT "Render/OUT.ppm"
 
 // #define CAM_POS      6, 0, 2.5813
-#define CAM_POS      10, 0, 2.5
+#define CAM_POS      10, -0.21801, 2.5858
 #define CAM_ROT      0, 0, 0
 #define CAM_CLIP     100
 
-#define SNS_RESX     320
-#define SNS_RESY     240
-#define SNS_SCALE    0.006
+#define SNS_RESX     480
+#define SNS_RESY     480
+#define SNS_SCALE    0.003
 #define SNS_DIST     2
 
 #define PRECISION 0.0001
 #define RAYS_PER_PIXEL 99
+#define THREADS 4
 
 using namespace std;
 
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
 
     scene.selectCamera(0);
 
-    scene.render(RAYS_PER_PIXEL);
+    scene.renderThreaded(RAYS_PER_PIXEL, THREADS);
     
     scene.mainCamera->sensor->toPPM(OUTPUT);
 }

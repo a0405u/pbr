@@ -16,8 +16,8 @@ RGB PlaneLight::getIntencity(Vector3 n) const
 {
     double cos = cosVector(normal, n);
 
-    if (cos < PRECISION)
-        return RGB();
+    if (cos <= 0)
+        return RGB(0, 0, 0);
 
     return color * intencity * cos;
 }

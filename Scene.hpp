@@ -28,14 +28,21 @@ struct Scene
     Scene(Geometry * g); // Конструктор сцены с геометрией g
     Scene(string filename); // Конструктор сцены из файла
 
-    void addGeometry(Geometry * g);
+    void loadObj(string filename);
+    void loadShp(string filename);
+
+    void addGeometry(Geometry * g); // Добавление геометрии g в сцену
     void addLight(Light * l); // Добавление источника света l в сцену
     void addCamera(Camera * c); // Добавление камеры c в сцену
+
     void selectCamera(int n); // Выбор камеры под номером n в качестве основной
-    Point * trace(Ray & r) const;
-    void renderThreaded(unsigned int passes = 2, unsigned int threads = 2);
+
+    Point * trace(Ray & r) const; // Трассировка луча в сцене
+
+    void renderThreaded(unsigned int passes = 2, unsigned int threads = 2); // 
     void renderThread(unsigned int passes = 1, unsigned int threads = 1, unsigned int * done = NULL);
 
+    void exportPLY(const string filename, unsigned int resolution) const;
 };
 
 #endif

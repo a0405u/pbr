@@ -13,8 +13,8 @@ struct Light
     Light(Vector3 pos) {position = pos;}
     Light(Vector3 pos, RGB col) {position = pos; color = col;}
 
-    virtual RGB getIntencity(Vector3 n) const {return RGB(0, 0, 0);}
-    virtual Vector3 getPosition() const {return position;}
+    virtual RGB getIntencity(Vector3 n) const {return RGB(0, 0, 0);} // Добавить на вход дополнительную точку
+    virtual Vector3 getPosition() const {return position;} // Либо метод возвращает точку
 };
 
 #endif

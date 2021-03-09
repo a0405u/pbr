@@ -14,6 +14,7 @@ struct Lambert: public Material
     Lambert(RGB color, string n): color(color) {this->name = n;}
 
     RGB luminance(Point p, Ray o, const Scene & scene);
+    RGB getColor();
 };
 
 #endif

@@ -1,19 +1,31 @@
 #include "Scene.hpp"
 
-Scene::Scene()
+Scene::Scene(): mainCamera(NULL)
 {
     return;
 }
 
-Scene::Scene(string filename)
+Scene::Scene(string filename): mainCamera(NULL)
+{
+    if (filename.substr(filename.find_last_of(".") + 1) == "obj")
+    {
+        loadObj(filename);
+    }
+    else if (filename.substr(filename.find_last_of(".") + 1) == "shp")
+    {
+        loadShp(filename);
+    }
+}
+
+void Scene::loadObj(string filename)
 {
     ifstream file(filename);
-    string line;
 
     if (file.is_open()) 
     {
         PolygonalGeometry * object = new PolygonalGeometry(); // Создаём пустой объект геометрии
         addGeometry(object); // Добавляем его в массив сцены
+        string line;
 
         int shiftFace = 0;
         int shiftVertex = 0;
@@ -150,6 +162,68 @@ Scene::Scene(string filename)
     file.close();
 }
 
+void Scene::loadShp(string filename)
+{
+    ifstream file(filename);
+
+    if (file.is_open()) 
+    {
+        PolygonalGeometry * object = new PolygonalGeometry(); // Создаём пустой объект геометрии
+        addGeometry(object); // Добавляем его в массив сцены
+        string line;
+
+        while(!file.eof())
+        {
+            getline(file, line);
+
+            if (line.substr(0, 8) == "vertices")
+            {
+                do
+                {
+                    getline(file, line);
+                    object->addVertex(new Vertex(line));
+                }
+                while(line.substr(0, 9) != "triangles" and !file.eof());
+            }
+            if (line.substr(0, 9) == "triangles")
+            {
+                do
+                {
+                    getline(file, line);
+
+                    Face * f = new Face();
+
+                    istringstream ss(line);
+                    unsigned int a, b, c;
+
+                    ss >> a >> b >> c;
+                    
+                    f->addVertex(object->vertex[a]);
+                    f->addVertex(object->vertex[b]);
+                    f->addVertex(object->vertex[c]);
+
+                    Vector3 normal = f->getNormal();
+
+                    f->addVertexNormal(new Vector3(normal));
+                    f->addVertexNormal(new Vector3(normal));
+                    f->addVertexNormal(new Vector3(normal));
+
+                    f->getArea();
+
+                    if (isnan(f->area))
+                        continue;
+
+                    object->addFace(f);
+                }
+                while(line.substr(0, 5) != "parts" and !file.eof());
+            }
+        }
+    }
+    else
+        throw "Incorrect file path!";
+    file.close();
+}
+
 void Scene::addGeometry(Geometry * g)
 {
     geometry.push_back(g);
@@ -163,6 +237,9 @@ void Scene::addLight(Light * l)
 void Scene::addCamera(Camera * c)
 {
     camera.push_back(c);
+
+    if (mainCamera = NULL)
+        mainCamera = c; 
 }
 
 void Scene::selectCamera(int n)

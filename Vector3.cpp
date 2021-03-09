@@ -17,42 +17,41 @@ Vector3::Vector3(double x, double y, double z)
 
 Vector3::Vector3(string s) // будет работать только для DOUBLE((
 {
-    vector<string> v = getWords(s);
+    istringstream ss(s);
+    ss >> x >> y >> z;
+    // vector<string> v = getWords(s);
 
-    x = stod(v[0]);
-    y = stod(v[1]);
-    z = stod(v[2]);
+    // x = stod(v[0]);
+    // y = stod(v[1]);
+    // z = stod(v[2]);
+}
+
+Vector3::Vector3(const Vector3 & v)
+{
+    x = v.x; y = v.y; z = v.z;
 }
 
 Vector3 Vector3::operator * (double m) const
 {
-    Vector3 v3(x * m, y * m, z * m); 
-
-    return v3;
+    return Vector3(x * m, y * m, z * m);
 }
 
 Vector3 Vector3::operator / (double m) const
 {
-    Vector3 v3(x / m, y / m, z / m); 
-
-    return v3;
+    return Vector3(x / m, y / m, z / m);
 }
 
-Vector3 Vector3::operator + (const Vector3 v3) const
+Vector3 Vector3::operator + (const Vector3 & v3) const
 {
-    Vector3 newVector3(x + v3.x, y + v3.y, z + v3.z); 
-
-    return newVector3;
+    return Vector3(x + v3.x, y + v3.y, z + v3.z);
 }
 
-Vector3 Vector3::operator - (const Vector3 v3) const
+Vector3 Vector3::operator - (const Vector3 & v3) const
 {
-    Vector3 newVector3(x - v3.x, y - v3.y, z - v3.z); 
-
-    return newVector3;
+    return Vector3(x - v3.x, y - v3.y, z - v3.z);
 }
 
-double Vector3::operator * (const Vector3 v3) const
+double Vector3::operator * (const Vector3 & v3) const
 {
     return x * v3.x + y * v3.y + z * v3.z;
 }
@@ -72,7 +71,7 @@ Vector3 Vector3::normalized() const
     return *this / this->length();
 }
 
-Vector3 Vector3::rotated(const Vector3 r) const
+Vector3 Vector3::rotated(const Vector3 & r) const
 {
     return *this;
 }

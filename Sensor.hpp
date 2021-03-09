@@ -11,7 +11,7 @@ using namespace std;
 struct Sensor
 {
     vector< vector< RGB > > value; // Двумерный массив пикселей матрицы
-    Vector3 origin;
+    Vector3 origin; //
     double scale;
     int resx;
     int resy;

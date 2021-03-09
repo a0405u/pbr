@@ -31,6 +31,7 @@ struct PolygonalGeometry: public Geometry
     int sizeFace() const;
     bool empty();
     Point* trace(Ray & r);
+    vector<Point *> toPointCloud(unsigned int resolution) const;
 };
 
 #endif

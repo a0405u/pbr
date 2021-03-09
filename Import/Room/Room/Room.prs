@@ -1,0 +1,49 @@
+;; Created by Lumicept
+Define room2
+parts
+  proom2_0001
+  proom2_0002
+  proom2_0003
+  proom2_0004
+  proom2_0005
+  proom2_0006
+  proom2_0007
+  proom2_0008
+  proom2_0009
+  proom2_0010
+  proom2_0011
+  proom2_0012
+  proom2_0013
+  proom2_0014
+  proom2_0015
+  proom2_0016
+  proom2_0017
+  proom2_0018
+  proom2_0019
+  proom2_0020
+enddef
+
+product Room
+attrs
+ a000001
+ a000002
+ a000003
+ a000004_warm2
+ a000005
+ a000006
+ a000007
+ a000008
+ a000009_j210
+ a000010
+ a000011
+ a000012
+ a000013
+ a000014_brick
+ a000015
+ a000016
+ a000017_floor6
+ a000018
+ a000019
+ a000020
+enddef
+enddef

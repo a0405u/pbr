@@ -1,0 +1,10 @@
+;; Created by Lumicept
+Camera CurrentIcamera
+  viewpoint -7.9109000 1.4619000 -16.287700
+  screen -8.6393015 1.7712388 -15.370475
+         -7.4822046 1.7711665 -15.197684
+         -8.6346954 1.0637335 -15.401616
+  resolution 1011 612
+  projection perspective
+enddef
+

@@ -22,6 +22,14 @@ double Face::getArea()
     return area;
 }
 
+Vector3 Face::getNormal()
+{
+    Vector3 ab = vertex[1]->position - vertex[0]->position;
+    Vector3 ac = vertex[2]->position - vertex[0]->position;
+
+    return vectorMultiply(ab, ac).normalized(); // работает без нормализации???
+}
+
 void Face::addVertex(Vertex * v)
 {
     vertex.push_back(v);

@@ -1,7 +1,7 @@
 #include "Lambert.hpp"
 #include <iostream>
 
-RGB Lambert::luminance(Point p, Ray o, const Scene & scene)
+RGB Lambert::luminance(Point p, Ray o, const Scene & scene) // Луч передаввать по ссылке, и рекурсивно не создавать
 {
     RGB e = p.calcIlluminance(scene); // Рассчет освещенности в точке от всех источников
 
@@ -30,4 +30,9 @@ RGB Lambert::luminance(Point p, Ray o, const Scene & scene)
     }
 
     return l * o.color; // Возвращение яркости
+}
+
+RGB Lambert::getColor()
+{
+    return color;
 }

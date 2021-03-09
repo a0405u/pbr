@@ -19,6 +19,7 @@ struct Face
     Face(const string s, const vector<Vertex *> & v, const vector<Vector3 *> & vn);
 
     double getArea();
+    Vector3 getNormal();
     void addVertex(Vertex * v);
     void addVertexNormal(Vector3 * vn);
 

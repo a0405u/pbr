@@ -16,6 +16,7 @@ struct Emissive: public Material
     Emissive(RGB color, double i, string n): color(color) {this->name = n; this->i = i;}
 
     RGB luminance(Point p, Ray o, const Scene & scene);
+    RGB getColor();
 };
 
 #endif

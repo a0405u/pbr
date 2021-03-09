@@ -11,6 +11,7 @@ struct Material
 {
     string name;
     virtual RGB luminance(Point p, Ray o, const Scene & scene) = 0;
+    virtual RGB getColor() = 0;
 };
 
 #endif

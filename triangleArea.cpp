@@ -5,7 +5,7 @@ double cosVector(const Vector3 & a, const Vector3 & b)
     return (a * b) / a.length() / b.length();
 }
 
-Vector3 vectorMultiply(const Vector3 a, const Vector3 b)
+Vector3 vectorMultiply(const Vector3 & a, const Vector3 & b)
 {
     return Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }

@@ -8,26 +8,44 @@
 
 using namespace std;
 
-struct Vector3
+
+template <typename Atype = double> struct Vector3;
+template <typename Atype> Vector3<Atype> operator / (const Atype m, const Vector3<Atype> & v);
+
+template <typename Atype> struct Vector3
 {
-        double x, y ,z;
+        Atype x, y, z;
 
-        Vector3();
-        Vector3(double a);
-        Vector3(double x, double y, double z);
+        Vector3() {x = 0; y = 0; z = 0; }
+        Vector3(Atype a) { x = a; y = a; z = a; }
+        Vector3(Atype x, Atype y, Atype z) { this->x = x; this->y = y; this->z = z; }
         Vector3(string s);
-        Vector3(const Vector3 & v);
+        Vector3(const Vector3<Atype> & v);
 
-        Vector3 operator * (double m) const;
-        Vector3 operator / (double m) const;
-        Vector3 operator + (const Vector3 & v) const;
-        Vector3 operator - (const Vector3 & v) const;
-        double operator * (const Vector3 & v) const;
-        Vector3 operator - () const;
+        template <typename Btype> Vector3<Atype> operator * (Btype m) const;
+        Vector3<Atype> operator / (Atype m) const;
+        template <typename Btype> Vector3<Atype> operator + (const Vector3<Btype> & v) const;
+        template <typename Btype> Vector3<Atype> operator + (Btype m) const;
+        Vector3<Atype> operator - (const Vector3<Atype> & v) const;
+        Vector3<Atype> operator / (const Vector3<Atype> & v) const;
+        double operator * (const Vector3<Atype> & v) const;
+        Vector3<Atype> operator - () const;
+        bool operator > (const Vector3<Atype> & v) const;
+        bool operator > (Atype m) const;
+        bool operator < (Atype m) const;
+        bool operator == (const Vector3<Atype> & v) const;
+        template <typename Btype> operator Vector3<Btype>() const;
+        Vector3<Atype> & operator += (const Vector3<Atype> & v);
+        Vector3<Atype> & operator /= (Atype m);
+        Atype & operator [] (int i);
+        const Atype & operator [] (int i) const;
 
         double length() const;
-        Vector3 normalized() const;
-        Vector3 rotated(const Vector3 & r) const;
+        Atype max() const;
+        Vector3<Atype> normalized() const;
+        Vector3<Atype> normalize();
+        Vector3<Atype> abs() const;
+        Vector3<Atype> rotated(const Vector3<Atype> & r) const;
 };
 
 #endif

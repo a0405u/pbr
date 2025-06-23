@@ -12,7 +12,7 @@ using namespace std;
 
 struct Vertex
 {
-    Vector3 position;
+    Vector3<double> position;
 
     Vertex(){};
     Vertex(double a, double b, double c);

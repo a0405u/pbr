@@ -1,9 +1,12 @@
 #ifndef RGB_H
 #define RGB_H
 
-#define PRECISION   0.0001
+#include "Color.hpp"
+#include "Constants.hpp"
 
-struct RGB // можно использовать вектор, но...
+//#define PRECISION   std::numeric_limits<double>::epsilon()
+
+struct RGB: public Color
 {
     double r;
     double g;
@@ -17,6 +20,7 @@ struct RGB // можно использовать вектор, но...
     RGB operator * (RGB c) const;
     RGB operator + (RGB c) const;
     RGB & operator += (const RGB & c);
+    RGB & operator /= (double m);
     bool operator != (double d) const;
 };
 

@@ -6,17 +6,23 @@
 #include "Material.hpp"
 #include "triangleArea.hpp"
 
+struct Lambert;
+
 struct Emissive: public Material
 {
     RGB color;
     double i;
 
-    Emissive(RGB color): color(color) {i = 100;}
-    Emissive(RGB color, string n): color(color) {this->name = n; i = 100;}
-    Emissive(RGB color, double i, string n): color(color) {this->name = n; this->i = i;}
+    Emissive(RGB color, string n = "Emissive"): color(color) {this->name = n; this->i = 1;}
+    Emissive(RGB color, double i = 1, string n = "Emissive"): color(color) {this->name = n; this->i = i;}
 
-    RGB luminance(Point p, Ray o, const Scene & scene);
-    RGB getColor();
+    ~Emissive() { return; }
+
+    RGB luminance(const Point & p, Ray & o, const Scene & scene) const;
+    RGB getDiffuse() const;
+
+    Material * clone() const;
+    Material * addMaterial(const Material * m);
 };
 
 #endif

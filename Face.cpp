@@ -1,6 +1,6 @@
 #include "Face.hpp"
 
-Face::Face(const string s, const vector<Vertex *> & v, const vector<Vector3 *> & vn) 
+Face::Face(const string s, const vector<Vertex *> & v, const vector<Vector3<double> *> & vn) 
 {
     vector<string> vs = getWords(s); // Получаем строки типа "v/vt/vn" где vt и vn опциональны
 
@@ -22,7 +22,7 @@ double Face::getArea()
     return area;
 }
 
-Vector3 Face::getNormal()
+Vector3<double> Face::getNormal()
 {
     Vector3 ab = vertex[1]->position - vertex[0]->position;
     Vector3 ac = vertex[2]->position - vertex[0]->position;
@@ -35,7 +35,7 @@ void Face::addVertex(Vertex * v)
     vertex.push_back(v);
 }
 
-void Face::addVertexNormal(Vector3 * vn)
+void Face::addVertexNormal(Vector3<double> * vn)
 {
     normal.push_back(vn);
 }

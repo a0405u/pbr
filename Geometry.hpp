@@ -12,8 +12,11 @@ struct Geometry
 {
     Geometry() { return; }
 
-    virtual Point* trace(Ray & r) = 0;
-    virtual vector<Point *> toPointCloud(unsigned int resolution) const = 0;
+    virtual ~Geometry() { return; }
+
+    virtual Point* trace(Ray & r) const = 0;
+
+    virtual vector<Point *> toPointGeometry(unsigned int resolution) const = 0;
 };
 
 #endif

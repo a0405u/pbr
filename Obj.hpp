@@ -13,7 +13,7 @@ using namespace std;
 struct Obj
 {
     vector<Vertex *> v; // вершины
-    vector<Vector3 *> vn; // нормали
+    vector<Vector3<double> *> vn; // нормали
     vector<Face *> f; // полигоны
     vector<PointLight *> l;
     RGB material;

@@ -28,19 +28,23 @@ struct Scene
     Scene(Geometry * g); // Конструктор сцены с геометрией g
     Scene(string filename); // Конструктор сцены из файла
 
-    void loadObj(string filename);
-    void loadShp(string filename);
+    void loadObj(string filename); // Загрузка сцены из файла Obj
+    void loadShp(string filename); // Загрузка сцены из файла Shp
 
     void addGeometry(Geometry * g); // Добавление геометрии g в сцену
     void addLight(Light * l); // Добавление источника света l в сцену
     void addCamera(Camera * c); // Добавление камеры c в сцену
 
+    void clear(); // Очистка сцены
+    void clearGeometry();
+
     void selectCamera(int n); // Выбор камеры под номером n в качестве основной
 
     Point * trace(Ray & r) const; // Трассировка луча в сцене
+    Point * traceGeometry(Ray & r) const; // Трассировка луча в сцене без источников света
 
-    void renderThreaded(unsigned int passes = 2, unsigned int threads = 2); // 
-    void renderThread(unsigned int passes = 1, unsigned int threads = 1, unsigned int * done = NULL);
+    string renderThreaded(unsigned int passes = 2, unsigned int threads = 2, unsigned int timelimit = 60); // Рендер в несколько потоков
+    void renderThread(unsigned int passes = 1, unsigned int threads = 1, unsigned int timelimit = 60, chrono::steady_clock::time_point begin = chrono::steady_clock::now(), unsigned int * done = NULL); // Рендер одного потока
 
     void exportPLY(const string filename, unsigned int resolution) const;
 };

@@ -14,30 +14,22 @@ RGB::RGB(double r, double g, double b)
 
 RGB RGB::operator * (double m) const
 {
-    RGB nc(r * m, g * m, b * m); 
-
-    return nc;
+    return RGB(r * m, g * m, b * m); 
 }
 
 RGB RGB::operator / (double m) const
 {
-    RGB nc(r / m, g / m, b / m); 
-
-    return nc;
+    return RGB(r / m, g / m, b / m); ;
 }
 
 RGB RGB::operator * (RGB c) const
 {
-    RGB nc(r * c.r, g * c.g, b * c.b); 
-
-    return nc;
+    return RGB(r * c.r, g * c.g, b * c.b); 
 }
 
 RGB RGB::operator + (RGB c) const
 {
-    RGB nc(r + c.r, g + c.g, b + c.b); 
-
-    return nc;
+    return RGB(r + c.r, g + c.g, b + c.b); 
 }
 
 RGB & RGB::operator += (const RGB & c)
@@ -45,6 +37,15 @@ RGB & RGB::operator += (const RGB & c)
     this->r += c.r; 
     this->g += c.g; 
     this->b += c.b; 
+
+    return *this;
+}
+
+RGB & RGB::operator /= (double m)
+{
+    r /= m; 
+    g /= m; 
+    b /= m; 
 
     return *this;
 }

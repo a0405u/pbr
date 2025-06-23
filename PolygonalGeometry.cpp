@@ -1,4 +1,5 @@
 #include "PolygonalGeometry.hpp"
+#include "Constants.hpp"
 #include "Lambert.hpp"
 
 PolygonalGeometry::PolygonalGeometry()
@@ -7,12 +8,26 @@ PolygonalGeometry::PolygonalGeometry()
     smooth = false;
 }
 
+PolygonalGeometry::~PolygonalGeometry()
+{
+    for (Vertex * v : vertex)
+        delete v;
+
+    for (Vector3<double> * v : vertexNormal)
+        delete v;
+
+    for (Face * f : face)
+        delete f;
+    
+    // delete material;
+}
+
 void PolygonalGeometry::addVertex(Vertex * v)
 {
     vertex.push_back(v);
 }
 
-void PolygonalGeometry::addVertexNormal(Vector3 * vn)
+void PolygonalGeometry::addVertexNormal(Vector3<double> * vn)
 {
     vertexNormal.push_back(vn);
 }
@@ -20,6 +35,13 @@ void PolygonalGeometry::addVertexNormal(Vector3 * vn)
 void PolygonalGeometry::addFace(Face * f)
 {
     face.push_back(f);
+}
+
+void PolygonalGeometry::addMaterial(Material * m)
+{
+    if (material and material != m)
+        delete material;
+    material = m;
 }
 
 int PolygonalGeometry::sizeVertex() const
@@ -42,7 +64,7 @@ bool PolygonalGeometry::empty()
     return vertex.empty();
 }
 
-Point * PolygonalGeometry::trace(Ray & r)
+Point * PolygonalGeometry::trace(Ray & r) const
 {
     double len;
     double mostlen = r.length;
@@ -52,9 +74,9 @@ Point * PolygonalGeometry::trace(Ray & r)
     for (unsigned long i = 0; i < face.size(); ++i)
     {
         //Vector3 & normal = *f[i]->normal[0]; // нужно вычислить относительно точек треугольника
-        Vector3 & a = face[i]->vertex[0]->position;
-        Vector3 & b = face[i]->vertex[1]->position;
-        Vector3 & c = face[i]->vertex[2]->position;
+        Vector3<double> & a = face[i]->vertex[0]->position;
+        Vector3<double> & b = face[i]->vertex[1]->position;
+        Vector3<double> & c = face[i]->vertex[2]->position;
 
         Vector3 ab = b - a;
         Vector3 ac = c - a;
@@ -66,9 +88,9 @@ Point * PolygonalGeometry::trace(Ray & r)
         if (dn > PRECISION || dn < -PRECISION) // проверка на параллельность
         {
 
-            Vector3 &an = *face[i]->normal[0];
-            Vector3 &bn = *face[i]->normal[1];
-            Vector3 &cn = *face[i]->normal[2];
+            Vector3<double> & an = *face[i]->normal[0];
+            Vector3<double> & bn = *face[i]->normal[1];
+            Vector3<double> & cn = *face[i]->normal[2];
 
             len = (face[i]->vertex[0]->position * normal - r.position * normal) / (dn);
             Vector3 point = r.position + r.direction * len;
@@ -99,24 +121,24 @@ Point * PolygonalGeometry::trace(Ray & r)
     return NULL;
 }
 
-vector<Point *> PolygonalGeometry::toPointCloud(unsigned int resolution) const
+vector<Point *> PolygonalGeometry::toPointGeometry(unsigned int resolution) const
 {
     unsigned int n;
     vector<Point *> points;
 
-    for (unsigned long i = 0; i < face.size(); ++i) // Последователньый проход по всем треугольникам геометрии
+    for (unsigned long i = 0; i < face.size(); ++i) // Последовательный проход по всем треугольникам геометрии
     {
         n = face[i]->area * resolution; // Количество точек в треугольнике
 
         // Вершины обрабатываемого треугольника
-        Vector3 & a = face[i]->vertex[0]->position;
-        Vector3 & b = face[i]->vertex[1]->position;
-        Vector3 & c = face[i]->vertex[2]->position;
+        Vector3<double> & a = face[i]->vertex[0]->position;
+        Vector3<double> & b = face[i]->vertex[1]->position;
+        Vector3<double> & c = face[i]->vertex[2]->position;
 
         // Нормали в вершинах треугольника
-        Vector3 &an = *face[i]->normal[0];
-        Vector3 &bn = *face[i]->normal[1];
-        Vector3 &cn = *face[i]->normal[2];
+        Vector3<double> & an = *face[i]->normal[0];
+        Vector3<double> & bn = *face[i]->normal[1];
+        Vector3<double> & cn = *face[i]->normal[2];
         
         // Вектора из одной точки составляющие треугольник
         Vector3 ab = b - a;

@@ -6,15 +6,21 @@
 #include "Material.hpp"
 #include "Scene.hpp"
 
+struct Emissive;
+
 struct Lambert: public Material
 {
     RGB color;
 
-    Lambert(RGB color): color(color) {}
-    Lambert(RGB color, string n): color(color) {this->name = n;}
+    Lambert(RGB color, string n = "Lambert"): color(color) {this->name = n;}
 
-    RGB luminance(Point p, Ray o, const Scene & scene);
-    RGB getColor();
+    ~Lambert() { return; }
+
+    RGB luminance(const Point & p, Ray & o, const Scene & scene) const;
+    RGB getDiffuse() const;
+
+    Material * clone() const;
+    Material * addMaterial(const Material * m);
 };
 
 #endif

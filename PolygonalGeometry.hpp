@@ -16,22 +16,25 @@ using namespace std;
 struct PolygonalGeometry: public Geometry
 {
     vector<Vertex *> vertex; // Вершины
-    vector<Vector3 *> vertexNormal; // Нормали
+    vector<Vector3<double> *> vertexNormal; // Нормали
     vector<Face *> face; // Полигоны
     Material * material;
     bool smooth; // Сглаженность поверхности
 
     PolygonalGeometry();
+    ~PolygonalGeometry();
 
     void addVertex(Vertex * v);
-    void addVertexNormal(Vector3 * vn);
+    void addVertexNormal(Vector3<double> * vn);
     void addFace(Face * f);
+    void addMaterial(Material * m);
     int sizeVertex() const;
     int sizeVertexNormal() const;
     int sizeFace() const;
     bool empty();
-    Point* trace(Ray & r);
-    vector<Point *> toPointCloud(unsigned int resolution) const;
+    Point* trace(Ray & r) const;
+
+    vector<Point *> toPointGeometry(unsigned int resolution) const;
 };
 
 #endif

@@ -9,10 +9,11 @@ struct PointLight: public Light
 
     PointLight();
     PointLight(double f);
-    PointLight(double f, Vector3 pos);
-    PointLight(double f, Vector3 pos, RGB col);
+    PointLight(double f, Vector3<double> pos);
+    PointLight(double f, Vector3<double> pos, RGB col);
 
-    RGB getIntencity(Vector3 n) const;
+    Point* trace(Ray & r) const { return NULL; }
+    RGB getIntencity(Vector3<double> n) const;
     
 };
 

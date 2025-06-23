@@ -1,5 +1,6 @@
 #include "Point.hpp"
 #include "Scene.hpp"
+#include "Constants.hpp"
 #include "triangleArea.hpp"
 
 RGB Point::calcIlluminance(const Scene & scene) const
@@ -19,7 +20,7 @@ RGB Point::calcIlluminance(const Scene & scene) const
 
         Ray shadowRay = Ray(lightVector, position + (lightVector * PRECISION));
 
-        if (scene.trace(shadowRay)) // Проверка на осветимость точки текущим источником
+        if (scene.traceGeometry(shadowRay)) // Проверка на осветимость точки текущим источником
             if (shadowRay.length < r + PRECISION) // Если найдена точка пересечения луча с поверхностью между источником и точкой
                 continue; // Переходим к обработке следующего источника
 

@@ -5,8 +5,8 @@
  
 using namespace std;
 
-double cosVector(const Vector3 & a, const Vector3 & b);
-double triangleArea(const Vector3 & a, const Vector3 & b, const Vector3 & c);
-Vector3 vectorMultiply(const Vector3 & a, const Vector3 & b);
+double cosVector(const Vector3<double> & a, const Vector3<double> & b);
+double triangleArea(const Vector3<double> & a, const Vector3<double> & b, const Vector3<double> & c);
+Vector3<double> vectorMultiply(const Vector3<double> & a, const Vector3<double> & b);
 
 #endif

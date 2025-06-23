@@ -12,16 +12,16 @@ using namespace std;
 struct Face
 {
     vector<Vertex *> vertex; 
-    vector<Vector3 *> normal;
+    vector<Vector3<double> *> normal;
     double area;
 
     Face(){};
-    Face(const string s, const vector<Vertex *> & v, const vector<Vector3 *> & vn);
+    Face(const string s, const vector<Vertex *> & v, const vector<Vector3<double> *> & vn);
 
     double getArea();
-    Vector3 getNormal();
+    Vector3<double> getNormal();
     void addVertex(Vertex * v);
-    void addVertexNormal(Vector3 * vn);
+    void addVertexNormal(Vector3<double> * vn);
 
 //    friend ostream& operator << (ostream& os, const Face& f);
 };

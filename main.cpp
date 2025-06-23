@@ -3,39 +3,53 @@
 #include <vector>
 #include <fstream>
 
+#include "Constants.hpp"
 #include "Headers.hpp"
 #include "Obj.hpp"
 #include "Vector3.hpp"
 #include "Camera.hpp"
 #include "Scene.hpp"
 #include "PolygonalGeometry.hpp"
+#include "PointGeometry.hpp"
+#include "VoxelGeometry.hpp"
+#include "VoxelGeometryA.hpp"
 #include "PointLight.hpp"
 #include "PlaneLight.hpp"
 #include "triangleArea.hpp"
 
-#include "PointCloud.hpp"
-
 #define _USE_MATH_DEFINES
 
-#define FILENAME "Import/Room/Room.shp"
-#define OUTPUT "Render/OUT.ppm"
+// #define FILENAME "Import/Room/Room.shp"
+// #define FILENAME "Scenes/CornellBoxNoLight.obj"
+// #define FILENAME "Scenes/CornellBoxRotated.obj"
+// #define FILENAME "Scenes/Bunny.obj"
+#define FILENAME "Scenes/Bunnys.obj"
+#define OUTPUTPPM "Render/OUT.ppm"
+#define OUTPUTTXT "Render/OUT.txt"
+#define OUTPUTDIR "Render/"
 
 // #define CAM_POS          6, 0, 2.5813
 #define CAM_POS             10, -0.21801, 2.5858
 #define CAM_ROT             0, 0, 0
 #define CAM_CLIP            100
 
+#define LIGHT_POS           -3.567967, -0.884011, 5.29
+#define LIGHT_SIZE          1.05, 1.3
+
 #define SNS_RESX            480
 #define SNS_RESY            480
 #define SNS_SCALE           0.003
 #define SNS_DIST            2
 
-#define PRECISION           0.0001
-#define RAYS_PER_PIXEL      99
+#define RAYS_PER_PIXEL      32 //128
+#define TIMELIMIT           99999
 #define THREADS             4
 
-#define CLOUD_RESOLUTION    256
-#define CLOUD_OUTPUT        "Export/OUT.ply"
+#define CLOUD_RESOLUTION    24000
+#define CLOUD_OUTPUT        "Export/CLOUDOUT.ply"
+
+#define VOXEL_RESOLUTION    256
+#define VOXEL_OUTPUT        "Export/VOXELOUT.ply"
 
 using namespace std;
 
@@ -49,25 +63,6 @@ int exec()
     if (command == "exit")
         return 0;
     
-    if (command == "debug")
-    {
-        scene = Scene(FILENAME);
-
-        // s.addLight(new PointLight(200, Vector3(4, 2, 6), RGB(0.3, 0.7, 1)));
-        // s.addLight(new PointLight(200, Vector3(-2, -5, -4), RGB(1, 0, 0.4)));
-        // s.addLight(new PointLight(200, Vector3(-3, 0, 3.6), RGB(1, 1, 1)));
-        scene.addLight(new PlaneLight(100, Vector3(-3.567967, -0.884011, 5.3), 1.05, 1.3));
-
-        scene.addCamera(new Camera(Vector3(CAM_POS), Vector3(CAM_ROT), SNS_RESX, SNS_RESY, SNS_SCALE, SNS_DIST));
-
-        //scene.selectCamera(0);
-        //scene.renderThreaded(RAYS_PER_PIXEL, THREADS);
-        //scene.mainCamera->sensor->toPPM(OUTPUT);
-
-        PointCloud pc = PointCloud(scene, CLOUD_RESOLUTION);
-        pc.exportPLY(CLOUD_OUTPUT);
-    }
-
     if (command == "load")
     {
         string filepath;
@@ -92,7 +87,7 @@ int exec()
             if (type == "plane")
             {
                 double i, x, y, z, sx, sy, rx, ry, rz, r, g, b;
-                cin >> x >> y >> z >> sx >> sy >> rx >> ry >> rz >> r >> g >> b;
+                cin >> i >> x >> y >> z >> sx >> sy >> rx >> ry >> rz >> r >> g >> b;
                 scene.addLight(new PlaneLight(i, Vector3(x, y, z), sx, sy, Vector3(rx, ry, rz), RGB(r, g, b)));
             }
         }
@@ -116,7 +111,7 @@ int exec()
         int resolution;
         string filepath;
         cin >> resolution >> filepath;
-        PointCloud(scene, resolution).exportPLY(filepath);
+        PointGeometry(scene, resolution).exportPLY(filepath);
     }
 
     return 1;
@@ -127,11 +122,30 @@ int main(int argc, char *argv[])
     srand(time(nullptr));
 
     string filename = FILENAME;
+    string outputfilename = to_string(RAYS_PER_PIXEL) + "p_" + to_string(VOXEL_RESOLUTION) + "v_";
 
     if (argc > 1 and strcmp(argv[1], "debug") == 0)
     {
         scene = Scene(FILENAME);
-        PointCloud(scene, CLOUD_RESOLUTION).exportPLY(CLOUD_OUTPUT);
+
+        PointGeometry * pg = new PointGeometry(scene, CLOUD_RESOLUTION);
+        pg->exportPLY(CLOUD_OUTPUT);
+
+        VoxelGeometryA * vg = new VoxelGeometryA(*pg, VOXEL_RESOLUTION);
+        vg->exportPLY(VOXEL_OUTPUT);
+
+        // scene.clear();
+        scene.clearGeometry();
+        delete pg;
+
+        scene.addGeometry(vg);
+        scene.addLight(new PlaneLight(100, Vector3<double>(LIGHT_POS), LIGHT_SIZE));
+        scene.addCamera(new Camera(Vector3<double>(CAM_POS), Vector3<double>(CAM_ROT), SNS_RESX, SNS_RESY, SNS_SCALE, SNS_DIST));
+
+        outputfilename += scene.renderThreaded(RAYS_PER_PIXEL, THREADS, TIMELIMIT) + "s";
+        scene.mainCamera->sensor->toPPM(OUTPUTDIR + outputfilename + ".ppm");
+        // scene.mainCamera->sensor->toTXT(OUTPUTDIR + outputfilename + ".txt");
+        scene.mainCamera->sensor->toCSV(OUTPUTDIR + outputfilename + ".csv");
         return 0;
     }
 

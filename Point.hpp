@@ -9,12 +9,13 @@ struct Light;
 
 struct Point
 {
-    Vector3 position;
-    Vector3 normal;
+    Vector3<double> position;
+    Vector3<double> normal;
     Material * material;
     RGB illuminance;
 
-    Point(Vector3 p, Vector3 n, Material * m): position(p), normal(n), material(m) {}
+    Point(Vector3<double> p, Vector3<double> n, Material * m): position(p), normal(n), material(m) {}
+    ~Point() { return; }
 
     RGB calcIlluminance(const Scene & scene) const; // Рассчитать освещенность в точке от всей сцены
     RGB calcIlluminance(const Light & light, const Scene & scene) const; // Рассчитать освещенность в точке от одного источника

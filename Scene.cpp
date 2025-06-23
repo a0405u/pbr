@@ -117,8 +117,10 @@ void Scene::loadObj(string filename)
                         vector<string> value = getWords(*it, '/');
 
                         f->addVertex(object->vertex[stoi(value[0]) - 1 - shiftVertex]);
-                        // texture.push_back(v[stoi(value[1]) - 1]); координаты текстур
-                        f->addVertexNormal(object->vertexNormal[stoi(value[2]) - 1 - shiftVertexNormal]);
+                        if (value.size() > 1)
+                            // texture.push_back(v[stoi(value[1]) - 1]); координаты текстур
+                        if (value.size() > 2)
+                            f->addVertexNormal(object->vertexNormal[stoi(value[2]) - 1 - shiftVertexNormal]);
                     }
                     f->getArea();
                     object->addFace(f);
@@ -135,7 +137,7 @@ void Scene::loadObj(string filename)
                     for (unsigned long i = 0; i < material.size(); i++)
                     {
                         if (material[i]->name == line.substr(7))
-                            object->material = material[i];
+                            object->addMaterial(material[i]);
                     }
                     break;
                 }
@@ -238,8 +240,34 @@ void Scene::addCamera(Camera * c)
 {
     camera.push_back(c);
 
-    if (mainCamera = NULL)
+    if (not mainCamera)
         mainCamera = c; 
+}
+
+void Scene::clear()
+{
+    for (Geometry * g : geometry)
+        delete g;
+    geometry.clear();
+
+    for (Material * m : material)
+        delete m;
+    material.clear();
+
+    for (Light * l : light)
+        delete l;
+    light.clear();
+
+    for (Camera * c : camera)
+        delete c;
+    camera.clear();
+}
+
+void Scene::clearGeometry()
+{
+    for (Geometry * g : geometry)
+        delete g;
+    geometry.clear();
 }
 
 void Scene::selectCamera(int n)
@@ -247,49 +275,74 @@ void Scene::selectCamera(int n)
     mainCamera = camera[n];
 }
 
-Point * Scene::trace(Ray & r) const
+Point * Scene::trace(Ray & ray) const
 {
     Point * t = NULL, * p = NULL;
 
-    for (unsigned long i = 0; i < geometry.size(); ++i)
+    for (Light * l : light)
     {
-        t = geometry[i]->trace(r);
-
-        if (t)
-            p = t;
+        t = l->trace(ray);
+        if (t) p = t;
     }
+    for (Geometry * g : geometry)
+    {
+        t = g->trace(ray);
+        if (t) p = t;
+    }
+    ray.count--;
     return p;
 }
 
-void Scene::renderThread(unsigned int passes, unsigned int threads, unsigned int * done)
+Point * Scene::traceGeometry(Ray & ray) const
+{
+    Point * t = NULL, * p = NULL;
+
+    for (Geometry * g : geometry)
+    {
+        t = g->trace(ray);
+
+        if (t) p = t;
+    }
+    ray.count--;
+    return p;
+}
+
+void Scene::renderThread(unsigned int passes, unsigned int threads, unsigned int timelimit, chrono::steady_clock::time_point begin, unsigned int * done)
 {
     double scale = mainCamera->sensor->scale;
-    Vector3 & origin = mainCamera->sensor->origin;
+    Vector3<double> & origin = mainCamera->sensor->origin;
     Vector3 offset;
-
-    for (int i = 0; i < passes; i++)
+    chrono::steady_clock::time_point current;
+    
+    for (unsigned int i = 0; i < passes; i++)
     {
-        for (int y = 0; y < mainCamera->sensor->resy; ++y)
-            for (int x = 0; x < mainCamera->sensor->resx; ++x)
+        for (unsigned int y = 0; y < mainCamera->sensor->resy; ++y)
+            for (unsigned int x = 0; x < mainCamera->sensor->resx; ++x)
             {
                 offset.y = scale * ( x + (double)rand() / RAND_MAX ); 
                 offset.z = - scale * ( y + (double)rand() / RAND_MAX );
 
                 Ray ray = Ray((origin + offset).normalized(), mainCamera->position); // Генерация луча
 
-                Point * p = trace(ray); // Находим точку пересечения луча и геометрии
-
-                if (p) // Если точка существует
+                while (ray.count > 0 and ray.color != 0)
                 {
-                    mainCamera->sensor->value[y][x] += p->material->luminance(*p, ray, *this);
+                    Point * p = trace(ray); // Находим точку пересечения луча и геометрии
+
+                    if (p) // Если точка существует
+                        mainCamera->sensor->value[y][x] += p->material->luminance(*p, ray, *this);
+                    else
+                        break;
                 }
             }
         (*done)++;
-        cout << '\r' << "RENDERING " << (*done) * 100 / (passes * threads)  << '%' << flush;
+        current = chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(current - begin).count() > timelimit)
+            return;
+        cout << '\r' << "RENDERING " << std::chrono::duration_cast<std::chrono::seconds>(current - begin).count() << " SECONDS " << (*done) * 100 / (passes * threads) << "% DONE" << flush;
     }
 }
 
-void Scene::renderThreaded(unsigned int passes, unsigned int threads)
+string Scene::renderThreaded(unsigned int passes, unsigned int threads, unsigned int timelimit)
 {
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
 
@@ -299,16 +352,17 @@ void Scene::renderThreaded(unsigned int passes, unsigned int threads)
 
     cout << '\r' << "RENDERING 0%" << flush;
 
-    for (int i = 0; i < threads; i++)
+    for (unsigned int i = 0; i < threads; i++)
     {
-        vt.push_back(new thread(&Scene::renderThread, this, passes/threads, threads, &done));
+        vt.push_back(new thread(&Scene::renderThread, this, passes/threads, threads, timelimit, begin, &done));
     }
-    for (int i = 0; i < threads; i++)
+    for (unsigned int i = 0; i < threads; i++)
     {
         vt[i]->join();
     }
 
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-    cout << endl << "FINISHED IN " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " SECONDS" << endl;
+    cout << endl << "FINISHED IN " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " SECONDS WITH " << done << " PASSES" << endl;
+    return to_string(std::chrono::duration_cast<std::chrono::seconds>(end - begin).count());
 }

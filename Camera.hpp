@@ -8,20 +8,20 @@
 
 struct Camera   
 {
-    Vector3 position;
-    Vector3 direction;
-    Vector3 rotation;
+    Vector3<double> position;
+    Vector3<double> direction;
+    Vector3<double> rotation;
     Sensor * sensor;
 
-    Camera(Vector3 pos, Vector3 rot, int resx, int resy, double s, double d)
+    Camera(Vector3<double> pos, Vector3<double> rot, int resx, int resy, double s, double d)
     {
         position = pos;
-        direction = Vector3 (CAM_DIR);
+        direction = Vector3<double>(CAM_DIR);
         rotation = rot;
         sensor = new Sensor(resx, resy, s, d, pos);
     }
 
-    Ray launch_ray(const Vector3 direction);
+    Ray launch_ray(const Vector3<double> direction);
 };
 
 #endif
